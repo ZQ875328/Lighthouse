@@ -5,7 +5,6 @@ use btleplug::{
     platform::Manager,
 };
 use clap::Parser;
-use clap_verbosity_flag::tracing::Verbosity;
 use lighthouse::Error;
 use tokio::time;
 use tracing::info;
@@ -20,18 +19,11 @@ struct Args {
     /// V1: Basestation BSID
     #[arg(short, long)]
     bsid: Option<String>,
-
-    #[clap(flatten)]
-    verbose: Verbosity,
 }
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
     let args = Args::parse();
-
-    tracing_subscriber::fmt()
-        .with_max_level(args.verbose.tracing_level_filter())
-        .init();
 
     let manager = Manager::new().await.map_err(Error::Btle)?;
     let adapters = manager.adapters().await.map_err(Error::Btle)?;

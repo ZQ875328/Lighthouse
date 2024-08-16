@@ -22,11 +22,11 @@ pub enum Error {
 
 pub async fn write(
     adapter: &Adapter,
-    id: PeripheralId,
+    id: &PeripheralId,
     data: &[u8],
-    uuid: Uuid,
+    uuid: &Uuid,
 ) -> Result<(), Error> {
-    let peripheral = adapter.peripheral(&id).await.map_err(Error::Btle)?;
+    let peripheral = adapter.peripheral(id).await.map_err(Error::Btle)?;
 
     if peripheral.connect().await.map_err(Error::Btle).is_ok()
         && peripheral
@@ -38,7 +38,7 @@ pub async fn write(
         if let Some(characteristic) = peripheral
             .characteristics()
             .into_iter()
-            .find(|c| c.uuid == uuid)
+            .find(|c| c.uuid == *uuid)
         {
             let _ = peripheral
                 .write(&characteristic, data, WriteType::WithoutResponse)
